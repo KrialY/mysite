@@ -3,9 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>KrialY</title>
 </head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    body{
+        width: 100%;
+        background: lightblue;
+        font-size: 20px;
+        position: relative;
+    }
+    .wrapper{
+        width: 100px;
+        margin:  0 auto;
+    }
+    .avatar{
+        width: 100px;
+        height: 100px;
+        background: url("./images/timg.jpg") no-repeat center;
+        border-radius: 50%;
+        background-size: cover;
+        margin-top: 50px;
+    }
+    ul{
+        list-style: none;
+    }
+    .wrapper div{
+        width: 100px;
+        text-align: center;
+    }
+    .info-list{
+        margin-top: 20px;
+    }
+    .info-list li{
+        width: 200px;
+        font-size: 16px;
+        text-align: center;
+        margin-left: -50px;
+    }
+    .line{
+        width: 2000px;
+        height: 1px;
+        background: black;
+        position: absolute;
+    }
+    .info-list .tips{
+        margin-top: 20px;
+    }
+</style>
 <body>
-    myTest
+    <div class="wrapper">
+        <div class="avatar"></div>
+        <div class="name">KrialY</div>
+        <div class="line"></div>
+        <ul class="info-list">
+            <li>
+                <span>一名简单的在读软件工程学生，请多指教</span>
+            </li>
+            <li class="tips">下面是我的社交网站：</li>
+            <li>
+                <a href="https://leetcode-cn.com/u/krialy/">LeetCode</a>
+            </li>
+            <li>
+                <a href="https://github.com/KrialY">GitHub</a>
+            </li>
+            <li>
+                <a href="https://mubu.com/doc/explore/34283">幕布-LearnAndRecord</a>
+            </li>
+        </ul>
+    </div>
 </body>
 </html>
