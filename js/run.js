@@ -2,7 +2,7 @@ window.onload=function(){
     particlesJS('particles-js', {
     'particles': {
       'number': {
-        'value': 200,
+        'value': 140,
         'density': {
           'enable': true,
           'value_area': 800
@@ -50,7 +50,7 @@ window.onload=function(){
       },
       'move': {
         'enable': true,
-        'speed': 3,
+        'speed': 2,
         'direction': 'none',
         'random': false,
         'straight': false,
@@ -71,7 +71,7 @@ window.onload=function(){
           'mode': 'grab'
         },
         'onclick': {
-          'enable': true,
+          'enable': false,
           'mode': 'push'
         },
         'resize': true
@@ -88,7 +88,7 @@ window.onload=function(){
           'size': 40,
           'duration': 2,
           'opacity': 8,
-          'speed': 3
+          'speed': 2
         },
         'repulse': {
           'distance': 200,
