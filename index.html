@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +18,7 @@
     }
     .wrapper{
         width: 100px;
-        margin:  0 auto;
+        margin: 0px auto;
     }
     .avatar{
         width: 100px;
@@ -26,7 +26,7 @@
         background: url("./images/timg.jpg") no-repeat center;
         border-radius: 50%;
         background-size: cover;
-        margin-top: 50px;
+        margin-top: 150px;
     }
     ul{
         list-style: none;
@@ -53,8 +53,14 @@
     .info-list .tips{
         margin-top: 20px;
     }
+    #particles-js{
+        position: absolute;
+        width: 2000px;
+        top: -200px;
+    }
 </style>
 <body>
+    <div id="particles-js"></div>
     <div class="wrapper">
         <div class="avatar"></div>
         <div class="name">KrialY</div>
@@ -75,5 +81,8 @@
             </li>
         </ul>
     </div>
+    
 </body>
+<script src="js/particles.min.js"></script>
+<script src="js/run.js"></script>
 </html>
