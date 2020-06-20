@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>别踩白块</title>
+</head>
+<style>
+    article{
+        width: 500px;
+        margin: 0 auto;
+    }
+    input:nth-of-type(1){
+        position: absolute;
+        left: 10%;
+        top: 100px;
+    }
+    .container{
+        border: 1px solid black;
+        width: 500px;
+        height: 600px;
+        overflow: hidden;
+        position: relative;
+    }
+    .content{
+        height: 1800px;
+        width: 500px;
+        position: absolute;
+        top: -1400px;
+    }
+    ul{
+        height: 600px;
+        width: 500px;
+        padding: 0;
+        margin: 0;
+        float: left;
+    }
+    ul li{
+        list-style: none;
+        border: 1px solid #666666;
+        box-sizing:border-box;
+        /*transition: 250ms;*/
+    }
+    .block_black,.block_white{
+        width: 125px;
+        height: 200px;
+        background: black;
+        float: left;
+    }
+    .block_white{
+        background: white;
+    }
+    .active{
+        background: #D3D3D3 !important;
+    }
+</style>
+<body>
+    <article>
+        <input type="button" value="开始游戏">
+        <div class="container" id="box">
+            <div class="content">
+                <ul id="bottom1"></ul>
+                <ul id="top"></ul>
+                <ul id="bottom"></ul>
+            </div>
+        </div>
+    </article>
+</body>
+<script>
+    window.onload=function () {
+        var game={
+            oipt:document.getElementsByTagName('input')[0],
+            ocontent:document.getElementsByClassName('content')[0],
+            obox:document.getElementById('box'),
+            oTop:document.getElementById('top'),
+            oBottom:document.getElementById('bottom'),
+            oBottom1:document.getElementById('bottom1'),
+            arrT:[[0,0,0,0],
+                [0,0,0,0],
+                [0,0,0,0]],
+            arrB:[[0,0,0,0],
+                [0,0,0,0],
+                [0,0,0,0]],
+            toRandom:function (arr) {
+                for(var i=0;i<arr.length;i++){
+                    var num=parseInt(Math.random()*4);
+                    arr[i][num]=1;
+                }
+            },
+            getStyle:function (obj,name){
+                return obj.currentStyle ? obj.currentStyle[name] : window.getComputedStyle(obj,null)[name]; //浏览器兼容性处理，注意getComputedStyle为只读属性
+            },
+            startMove:function (obj,json){
+                var othis=this;
+                var speed =5;
+                clearInterval(obj.timer);   //先清除之前的定时器
+                setInterval(function () {
+                    speed+=0.1;
+                },1000);
+                obj.timer = setInterval(function(){
+                    for( var attr in json ){    //遍历json属性
+                        var cur = parseInt(othis.getStyle(obj,attr));
+                        speed = speed > 0 ? Math.ceil(speed) : Math.floor(speed);    //speed 数字转化，防止不能到达目标的bug
+                        obj.style[attr] = cur + speed  + 'px';
+                    }
+                },30);
+            },
+            mapInit:function (arr,obj) {
+                var thtml="";
+                for(var i=0;i<arr.length;i++)
+                    for(var j=0;j<arr[i].length;j++){
+                        if(arr[i][j]==0){
+                            thtml+="<li class='block_white'></li>";
+                        }else if(arr[i][j]==1){
+                            thtml+="<li class='block_black'></li>";
+                        }
+                    }
+                obj.innerHTML=thtml;
+            },
+            againInit:function (arr,obj) {
+                for(var i=0;i<arr.length;i++)
+                    for(var j=0;j<arr[i].length;j++){
+                        if(arr[i][j]==0){
+                            obj[i*arr[0].length+j].className="block_white";
+                        }else if(arr[i][j]==1){
+                            obj[i*arr[0].length+j].className="block_black";
+                        }
+                    }
+            },
+            test:function () {
+                var othis=this;
+                var onoff=true;
+                var aLi=this.ocontent.getElementsByTagName('li');
+                var contentT=this.obox.offsetTop+this.obox.offsetHeight;
+                this.obox.timer=setInterval(function () {
+                    var T=parseInt(othis.getStyle(othis.ocontent,'top'));
+                    if(T>=-600&&onoff){
+                        onoff=false;
+                        for(var i=0;i<othis.arrB.length;i++)
+                            for(var j=0;j<othis.arrB[i].length;j++){
+                                othis.arrB[i][j]=0;
+                            }
+                        othis.toRandom(othis.arrB);
+                        othis.againInit(othis.arrB,othis.oBottom1.getElementsByTagName('li'));
+                        othis.againInit(othis.arrB,othis.oBottom.getElementsByTagName('li'));
+                    }
+                    if(T>=0){
+                        for(var i=0;i<othis.arrT.length;i++)
+                            for(var j=0;j<othis.arrT[i].length;j++){
+                                othis.arrT[i][j]=0;
+                            }
+                        othis.toRandom(othis.arrT);
+                        othis.ocontent.style.top=-1200+"px";
+                        othis.againInit(othis.arrT,othis.oTop.getElementsByTagName('li'));
+                        onoff=true;
+                    }
+                    othis.testOver(contentT,aLi);
+                },20)
+            },
+            getElementTop:function (element){
+                var actualTop = element.offsetTop;
+                var current = element.offsetParent;
+                while (current !== null){
+                    actualTop += current.offsetTop;
+                    current = current.offsetParent;
+                }
+                return actualTop;
+            },
+            testOver:function (T,obj) {
+                var T=T-obj[0].offsetHeight;
+                for(var i=0;i<obj.length;i++){
+                    var objT=this.getElementTop(obj[i]);
+//                    alert(objT);
+                    if(objT>=T&&objT<=T+obj[i].offsetHeight/2&&obj[i].className==="block_black"){
+                        clearInterval(this.obox.timer);
+                        alert("游戏结束！");
+                        window.location.reload();
+                    }
+                }
+            },
+            init:function () {
+                this.toRandom(this.arrT);
+                this.toRandom(this.arrB);
+                this.mapInit(this.arrT,this.oTop);
+                this.mapInit(this.arrB,this.oBottom1);
+                this.mapInit(this.arrB,this.oBottom);
+            },
+            event:function () {
+                var othis=this;
+                var T_li=this.oTop.children;
+                var B_li=this.oBottom.children;
+                var B1_li=this.oBottom1.children;
+
+                this.oipt.onclick=function () {
+                    othis.startMove(othis.ocontent,{top:0});
+                    othis.test();
+
+                    for(var i=0;i<T_li.length;i++){
+                        T_li[i].onclick=function () {
+                            if(this.className==="block_black"){
+                                this.className+=" active";
+                            }else{
+                                clearInterval(othis.obox.timer);
+                                this.style.background="red";
+                                alert("游戏结束！");
+                                window.location.reload();
+                            }
+                        }
+                    }
+                    for(var i=0;i<B_li.length;i++){
+                        B_li[i].index=i;
+                        B1_li[i].index=i;
+                        B_li[i].onclick=function () {
+                            if(this.className==="block_black"){
+                                this.className+=" active";
+                                B1_li[this.index].className+=" active";
+                            }else{
+                                clearInterval(othis.obox.timer);
+                                this.style.background="red";
+                                alert("游戏结束！");
+                                window.location.reload();
+                            }
+                        }
+                    }
+                    for(var i=0;i<B1_li.length;i++){
+                        B1_li[i].onclick=function () {
+                            if(this.className==="block_black"){
+                                this.className+=" active";
+                                B_li[this.index].className+=" active";
+                            }else{
+                                clearInterval(othis.obox.timer);
+                                this.style.background="red";
+                                alert("游戏结束！");
+                                window.location.reload();
+                            }
+
+                        }
+                    }
+                }
+
+            }
+        }
+        game.init();
+        game.event();
+    }
+</script>
+</html>
