@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2048</title>
+</head>
+<style>
+    article{
+        margin: 0 auto;
+        width: 650px;
+    }
+    #container{
+        width: 655px;
+        height: 655px;
+        background: #B8AF9E;
+        border-radius: 2%;
+        position: relative;
+    }
+    #container div{
+        transition: 1s;
+    }
+    .ashBlock{
+        width: 145px;
+        height: 145px;
+        background: #CCC0B2;
+        position: absolute;
+    }
+    div[class*="num"]{
+        width: 145px;
+        height: 145px;
+        position: absolute;
+        font-size: 90px;
+        line-height: 145px;
+        text-align: center;
+    }
+    .num2{
+        background: #EEE4DA;
+        color: #7C736A;
+    }
+    .num4{
+        background: #ECE0C8;
+        color: #7C736A;
+    }
+    .num8{
+        background: #F2B179;
+        color: #FFF7EB;
+    }
+    .num16{
+        background: #F59563;
+        color: #FFF7EB;
+        font-size: 85px !important;
+    }
+    .num32{
+        background: #FF7461;
+        color: #FFF7EB;
+        font-size: 85px !important;
+    }
+    .num64{
+        background: #ED5635;
+        color: #FFF7EB;
+        font-size: 85px !important;
+    }
+    .num128{
+        background: #EDCE71;
+        color: #FFF7EB;
+        font-size: 75px !important;
+    }
+    .num256{
+        background: #F3CE4F;
+        color: #FFF7EB;
+        font-size: 75px !important;
+    }
+    .num512{
+        background: #DAB94D;
+        color: #FFF7EB;
+        font-size: 75px !important;
+    }
+    .num1024{
+        background: #E4BA0E;
+        color: #FFF7EB;
+        font-size: 60px !important;
+    }
+    .num2048{
+        background: #ECC401;
+        color: #FFF7EB;
+        font-size: 60px !important;
+    }
+    @-webkit-keyframes tobig
+    {
+        0%{
+            -webkit-transform: scale(1.5,1.5);
+
+        }
+        100%{
+            -webkit-transform: scale(1,1);
+            background: red;
+        }
+    }
+</style>
+<body>
+    <article>
+        <div id="container">
+
+        </div>
+    </article>
+</body>
+<script>
+    window.onload=function () {
+        var content={
+            oContainer:document.getElementById('container'),
+            map:[[8,0,0,0],
+                [0,0,2,0],
+                [0,0,0,2],
+                [0,2,0,0]],
+            mapinit:function () {
+                var arr=this.map;
+                var Chtml="";
+                for(var i=0;i<arr.length;i++)
+                    for(var j=0;j<arr[i].length;j++){
+                        Chtml+="<div class='ashBlock'></div>";
+                    }
+                this.oContainer.innerHTML=Chtml;
+                var adiv=this.oContainer.getElementsByTagName('div');
+                for(var i=0;i<arr.length;i++)
+                    for(var j=0;j<arr[i].length;j++){
+                        adiv[i*arr[0].length+j].style.left=j*adiv[0].offsetWidth+(j+1)*15+"px";
+                        adiv[i*arr[0].length+j].style.top=i*adiv[0].offsetHeight+(i+1)*15+"px";
+                    }
+                for(var i=0;i<arr.length;i++)
+                    for(var j=0;j<arr[i].length;j++){
+                        if(arr[i][j]!=0){
+                            adiv[i*arr[0].length+j].className="num"+arr[i][j];
+                            adiv[i*arr[0].length+j].innerHTML=arr[i][j];
+                        }
+
+                    }
+            },
+            againInit:function () {
+                var arr=this.map;
+                var adiv=this.oContainer.getElementsByTagName('div');
+
+                for(var i=0;i<arr.length;i++)
+                    for(var j=0;j<arr[i].length;j++){
+                        if(arr[i][j]!=0){
+                            adiv[i*arr[0].length+j].className="num"+arr[i][j];
+                            adiv[i*arr[0].length+j].innerHTML=arr[i][j];
+                        }else{
+                            adiv[i*arr[0].length+j].className="ashBlock";
+                            adiv[i*arr[0].length+j].innerHTML="";
+                        }
+
+                    }
+            },
+            init:function () {
+                this.mapinit();
+            },
+            onLeft:function () {
+                var arr=this.map
+                for(var i=0;i<arr.length;i++)
+                    for(var j=1;j<arr[0].length;j++){
+                        for(var k=j;k>0;k--){
+                            if(arr[i][k-1]==0){
+                                var swap=arr[i][k-1];
+                                arr[i][k-1]=arr[i][k];
+                                arr[i][k]=swap;
+                            }
+                        }
+                    }
+
+            },
+            onRight:function () {
+                var arr=this.map
+                for(var i=0;i<arr.length;i++)
+                    for(var j=arr[0].length-2;j>=0;j--){
+                        for(var k=j;k<arr[0].length-1;k++){
+                            if(arr[i][k+1]==0){
+                                var swap=arr[i][k+1];
+                                arr[i][k+1]=arr[i][k];
+                                arr[i][k]=swap;
+                            }
+                        }
+                    }
+
+            },
+            onTop:function () {
+                var arr=this.map
+                for(var i=0;i<arr[0].length;i++)
+                    for(var j=0;j<arr.length;j++){
+                        for(var k=j;k>0;k--){
+                            if(arr[k-1][i]==0){
+                                var swap=arr[k-1][i];
+                                arr[k-1][i]=arr[k][i];
+                                arr[k][i]=swap;
+                            }
+                        }
+
+                    }
+
+            },
+            onBottom:function () {
+                var arr=this.map
+                for(var i=0;i<arr[0].length;i++)
+                    for(var j=arr.length-1;j>=0;j--){
+                        for(var k=j;k<arr.length-1;k++){
+                            if(arr[k+1][i]==0){
+                                var swap=arr[k+1][i];
+                                arr[k+1][i]=arr[k][i];
+                                arr[k][i]=swap;
+                            }
+                        }
+
+                    }
+
+            },
+            toMerge_L:function () {
+                var arr=this.map;
+                for(var i=0;i<arr.length;i++)
+                    for(var j=0;j<arr[0].length-1;j++){
+                        if(arr[i][j]==arr[i][j+1]){
+                            arr[i][j]=arr[i][j]*2;
+                            arr[i][j+1]=0;
+                        }
+                    }
+            },
+            toMerge_R:function () {
+                var arr=this.map;
+                for(var i=0;i<arr.length;i++)
+                    for(var j=arr[0].length-1;j>0;j--){
+                        if(arr[i][j]==arr[i][j-1]){
+                            arr[i][j]=arr[i][j]*2;
+                            arr[i][j-1]=0;
+                        }
+                    }
+            },
+            toMerge_T:function () {
+                var arr=this.map;
+                for(var i=0;i<arr[0].length;i++)
+                    for(var j=0;j<arr.length-1;j++){
+                        if(arr[j][i]==arr[j+1][i]){
+                            arr[j][i]=arr[j][i]*2;
+                            arr[j+1][i]=0;
+                        }
+                    }
+            },
+            toMerge_B:function () {
+                var arr=this.map;
+                for(var i=0;i<arr[0].length;i++)
+                    for(var j=arr.length-1;j>0;j--){
+                        if(arr[j][i]==arr[j-1][i]){
+                            arr[j][i]=arr[j][i]*2;
+                            arr[j-1][i]=0;
+                        }
+                    }
+            },
+            gethasNun:function () {
+                var arr=this.map;
+                var num=parseInt(Math.random()*arr.length*arr[0].length);
+                var l=Math.floor(num/arr.length);
+                var t=num-l*arr[0].length;
+                var num=0;
+                for(var i=0;i<arr.length;i++)
+                    for(var j=0;j<arr[i].length;j++){
+                        if(arr[i][j]!=0){
+                            num++;
+                        }
+                    }
+                if(num==arr.length*arr[0].length){
+                        return 0;
+                }
+                if(arr[l][t]==0){
+                    arr[l][t]=2;
+                    return 1;
+                }
+                return this.gethasNun();
+            },
+            event:function () {
+                var othis=this;
+                document.onkeydown=function (ev) {
+
+                    var ev=ev||window.event;
+                    switch (ev.keyCode){
+                        case 37:
+                            othis.onLeft();
+                            othis.toMerge_L();
+                            othis.onLeft();
+                            break;
+                        case 38:
+                            othis.onTop();
+                            othis.toMerge_T();
+                            othis.onTop();
+                            break;
+                        case 39:
+                            othis.onRight();
+                            othis.toMerge_R();
+                            othis.onRight();
+                            break;
+                        case 40:
+                            othis.onBottom();
+                            othis.toMerge_B();
+                            othis.onBottom();
+                            break;
+                    }
+                    othis.gethasNun();
+                    othis.againInit();
+                }
+            }
+        }
+        content.init();
+        content.event();
+    }
+</script>
+</html>
