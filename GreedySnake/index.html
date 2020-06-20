@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>web方块</title>
+</head>
+<style type="text/css">
+*{
+	padding: 0px;
+	margin: 0px;
+}
+.container{
+	margin-top: 30px;
+	margin-left: 250px;
+	float: left;
+	position: relative;
+	border:5px solid black;
+	position: relative;
+}
+.box0{
+	width: 25px;
+	height: 25px;
+	background: #89D7BF;
+	position: absolute;
+}
+.box3,.box2,.box1{
+	width: 25px;
+	height: 25px;
+	background: #C1ECD7;
+	position: absolute;
+}
+ul{
+	list-style-type: none;
+	width: 150px;
+	height: 60px;
+	float: left;
+	margin-left: 100px;
+	margin-top: 150px;
+}
+ul li{
+	border: 2px solid black;
+	border-bottom: none;
+}
+.max,.maxscore,.now,.nowscore{
+	width: 150px;
+	height: 30px;
+	font-size: 20px;
+	color: #666;
+	text-align: center;
+	line-height: 30px;
+	float: left;
+}
+.now{
+	margin-top:20px;
+}
+.maxscore,.nowscore{
+	color: #89D7BF;
+	border-bottom:2px solid black
+}
+input{
+	cursor: pointer;
+	width: 100px;
+	height: 30px;
+	text-align: center;
+	background: #3ABC94;
+	border: none;
+	opacity: 0.6;
+	color: white;
+	float: left;
+	margin-left: 20px;
+	margin-top: 300px;
+}
+input:hover{
+	opacity: 1;
+}
+.tips{
+	width: 200px;
+	height: 100px;
+	color: #89D7BF;
+	font-weight: bold;
+	position: absolute;
+	left: 100px;
+	top: 10px;
+}
+.tips span{
+	color: red;
+}
+</style>
+<body>
+	<div class="tips"><span>tips</span>:按q逆时针旋转，按e顺时针旋转，下左右分别控制移动，按回车键可以快速开始</div>
+	<ul class="ul1">
+		<li class="max">最高分：</li>
+		<li class="maxscore">0</li>
+		<li class="now">当前分数：</li>
+		<li class="nowscore">0</li>
+	</ul>
+	<div class="container"></div>
+	<input type="button" value="开始游戏" style="margin-left:150px" />
+	<input type="button" value="重新开始" />
+</body>
+<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		var gameStart={
+			$parent:$('.container'),
+			$startBtn:$("input[value=开始游戏]"),//开始按钮
+			$restartBtn:$("input[value=重新开始]"),//重新开始按钮
+			$maxscore:$('.maxscore'),//最大分数
+			$nowscore:$('.nowscore'),//当前分数
+			mapwNum:0,//地图的长度
+			maphNum:0,//地图的高度
+			scoreNumber:0,//计分数
+			boxWidth:25,//小方块的宽度
+			boxHeight:25,//小方块的长度
+			map:[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],//地图
+
+			basic_init:function(){//基本的页面初始化
+				this.mapwNum=this.map[0].length;
+				this.maphNum=this.map.length;
+				var pW=this.mapwNum*this.boxWidth;
+				var pH=this.maphNum*this.boxHeight;
+
+				this.$parent.css({'width':pW,'height':pH});
+				for(var i=0;i<this.map.length;i++){
+					for(var j=0;j<this.map[i].length;j++){
+
+						var $div=$('<div class="box'+this.map[i][j]+'"></div>');
+						var L=this.boxWidth*j;
+						var T=this.boxHeight*i;
+
+						$div.css({'left':L,'top':T});
+						$div.appendTo(this.$parent);
+					}
+				}
+			},
+			arr_blockInit:function(){//初始化map数组
+				for(var i=0;i<this.map.length;i++){
+					for(var j=0;j<this.map[i].length;j++){
+						this.$parent.find('div').eq(i*this.mapwNum+j).attr('class','box'+this.map[i][j]);
+						
+					}
+				}
+			},
+			changeDir:function(ev){//形状的顺时针和逆时针旋转
+				var othis=this;
+				var line=1000;
+				var row=1000;
+				var goplay=false;
+				var k=-1;
+				var kt=-1;
+				var oarr=[];
+				var a=1;
+				var b=1;
+
+				for(var i=0;i<othis.map.length;i++)
+					for(var j=0;j<othis.map[i].length;j++){
+						if(othis.map[i][j]==2){
+							goplay=true;
+							line=i;
+							row=j;
+						}
+					}
+				if(goplay!=true)
+					return 0;
+				for(var i=0;i<othis.map.length;i++)
+					for(var j=0;j<othis.map[i].length;j++){
+						if(othis.map[i][j]==1){
+							var json={lNum:j-row,tNum:i-line};
+							oarr.push(json);
+						}
+					}
+				for(var i=0;i<oarr.length;i++){
+					if(oarr[i].lNum!=0&&oarr[i].tNum==0){
+						k=oarr[i].lNum;
+						
+						if(typeof(othis.map[line+k])=="undefined"||othis.map[line+k][row]==3){
+							b=0;
+						}
+						if(typeof(othis.map[line-k])=="undefined"||othis.map[line-k][row]==3){
+							a=0;
+						}
+					}else if(oarr[i].lNum!=0&&oarr[i].tNum!=0){
+						k=oarr[i].lNum;
+						kt=oarr[i].tNum;
+						if(kt!=-1&&typeof(othis.map[line-k])=="undefined"||typeof(othis.map[line-k][row+kt])=="undefined"||othis.map[line-k][row+kt]==3){
+							a=0;	
+						}
+						if(kt!=-1&&typeof(othis.map[line+k])=="undefined"||typeof(othis.map[line+k][row-kt])=="undefined"||othis.map[line+k][row-kt]==3){
+							b=0;
+						}
+					}
+					else if(oarr[i].lNum==0&&oarr[i].tNum!=0){
+						k=oarr[i].tNum;
+
+						if(typeof(othis.map[line][row+k])=="undefined"||othis.map[line][row+k]==3){
+							a=0;
+						}
+						if(typeof(othis.map[line][row-k])=="undefined"||othis.map[line][row-k]==3){
+							b=0;
+						}
+					}
+				}
+				if(a!=0&&ev.which==81)
+					for(var i=0;i<othis.map.length;i++)
+						for(var j=0;j<othis.map[i].length;j++)
+							if(othis.map[i][j]==1)
+								othis.map[i][j]=0;
+
+				if(b!=0&&ev.which==69)
+					for(var i=0;i<othis.map.length;i++)
+						for(var j=0;j<othis.map[i].length;j++)
+							if(othis.map[i][j]==1)
+								othis.map[i][j]=0;
+
+				for(var i=0;i<oarr.length;i++){
+					if(a==0&&ev.which==81)
+						break;
+					if(b==0&&ev.which==69)
+						break;
+
+					switch(ev.which){
+						case 81:
+							if(oarr[i].lNum!=0&&oarr[i].tNum!=0){
+								k=oarr[i].lNum;
+								kt=oarr[i].tNum;
+								othis.map[line-k][row+kt]=1;
+							}
+							else if(oarr[i].lNum!=0){
+								k=oarr[i].lNum;
+								othis.map[line-k][row]=1;
+							}
+							else{
+								k=oarr[i].tNum;
+								othis.map[line][row+k]=1;
+							};
+						break;
+						case 69:
+							if(oarr[i].lNum!=0&&oarr[i].tNum!=0){
+								k=oarr[i].lNum;
+								kt=oarr[i].tNum;
+								othis.map[line+k][row-kt]=1;
+							}
+							else if(oarr[i].lNum!=0){
+								k=oarr[i].lNum;
+								othis.map[line+k][row]=1;
+							}
+							else{
+								k=oarr[i].tNum;
+								othis.map[line][row-k]=1;
+							};
+						break;
+					}
+				}
+				othis.arr_blockInit();
+			},
+			changePos:function(ev){//“下左右”按键对应改变形状的位置
+				var othis=this;
+				var temp=0;//交换数
+				var allowL=1;//是否允许向左移动
+				var allowR=1;
+				var allowB=1;
+
+				for(var i=0;i<othis.map.length;i++)
+					for(var j=0;j<othis.map[i].length;j++){
+						if((othis.map[i][j]==1||othis.map[i][j]==2)&&(j==0||othis.map[i][j-1]==3)){
+							allowL=0;
+						}
+						if((othis.map[i][j]==1||othis.map[i][j]==2)&&(j==othis.map[i].length-1||othis.map[i][j+1]==3)){
+							allowR=0;
+						}
+						if((othis.map[i][j]==1||othis.map[i][j]==2)&&(i==othis.map.length-1||othis.map[i+1][j]==3)&&ev.which==40){
+							allowB=0;
+							for(var m=0;m<othis.map.length;m++)
+								for(var n=0;n<othis.map[m].length;n++){
+									if(othis.map[m][n]==1||othis.map[m][n]==2)
+										othis.map[m][n]=3;
+								}
+							othis.getScore();
+							othis.block_init();
+						}	
+					}
+
+				switch(ev.which){
+					case 37:
+						if(allowL)
+							for(var i=0;i<othis.map.length;i++)
+								for(var j=0;j<othis.map[i].length;j++){
+									if(othis.map[i][j]==1||othis.map[i][j]==2){
+										temp=othis.map[i][j];
+										othis.map[i][j]=othis.map[i][j-1];
+										othis.map[i][j-1]=temp;
+									}
+										
+								};
+					break;
+					case 39:
+						if(allowR)
+							for(var i=othis.map.length-1;i>=0;i--)
+								for(var j=othis.map[i].length-1;j>=0;j--){
+									if(othis.map[i][j]==1||othis.map[i][j]==2){
+										temp=othis.map[i][j];
+										othis.map[i][j]=othis.map[i][j+1];
+										othis.map[i][j+1]=temp;
+									}		
+								};
+
+					break;
+					case 40:
+						if(allowB)
+							for(var i=othis.map.length-1;i>=0;i--)
+								for(var j=othis.map[i].length-1;j>=0;j--){
+									if(othis.map[i][j]==1||othis.map[i][j]==2){
+										temp=othis.map[i][j];
+										othis.map[i][j]=othis.map[i+1][j];
+										othis.map[i+1][j]=temp;
+									}		
+								};
+					break;
+				}
+				othis.arr_blockInit();
+			},
+			block_init:function(){//初始化形状以及初始位置
+				var othis=this;
+				var num=0;
+				var oarr=[[0,1,othis.map[0].length,othis.map[0].length+1]
+						 ,[1,othis.map[0].length,othis.map[0].length+1,othis.map[0].length+2,othis.map[0].length+1]
+						 ,[0,othis.map[0].length,othis.map[0].length+1,othis.map[0].length+2,othis.map[0].length]
+						 ,[0,1,2,3,2]
+						 ,[1,2,othis.map[0].length,othis.map[0].length+1,1]
+						 ,[0,1,othis.map[0].length+1,othis.map[0].length+2,1]
+						 ,[2,othis.map[0].length,othis.map[0].length+1,othis.map[0].length+2,othis.map[0].length+2]];
+
+				num=parseInt(Math.random()*oarr.length);
+
+				for(var i=0;i<oarr[num].length;i++){
+					var line=parseInt(oarr[num][i]/othis.map[0].length);
+					var row=oarr[num][i]%othis.map[0].length;
+					othis.overflow_checkAndNewGame(othis.map[line][row]);//检测要替换的是否为3
+					if(i==oarr[num].length-1&&num!=0){
+						othis.map[line][row]=2;
+					}else{
+						othis.map[line][row]=1;
+					}
+				}
+			},
+			overflow_checkAndNewGame:function(i){//超出检测函数与刷新网页函数
+				if(i==3){
+					alert("游戏结束~你的分数为"+this.$nowscore.html()+"，再接再厉！");
+					window.location.reload();
+				}
+			},
+			autoGo:function(){//自动往下走
+				var othis=this;
+				setInterval(function(){
+					othis.downGo();
+					othis.arr_blockInit();
+				},500);
+			},
+			downGo:function(){//按“下”键的时候加速往下走
+				var othis=this;
+				var temp=0;//交换数
+				var allowB=1;//是否允许向下移动
+
+				for(var i=0;i<othis.map.length;i++)
+					for(var j=0;j<othis.map[i].length;j++){
+						
+						if((othis.map[i][j]==1||othis.map[i][j]==2)&&(i==othis.map.length-1||othis.map[i+1][j]==3)){
+							allowB=0;
+							for(var m=0;m<othis.map.length;m++)
+								for(var n=0;n<othis.map[m].length;n++){
+									if(othis.map[m][n]==1||othis.map[m][n]==2)
+										othis.map[m][n]=3;
+								}
+							othis.block_init();
+							othis.getScore();
+						}	
+					}
+
+				if(allowB)
+					for(var i=othis.map.length-1;i>=0;i--)
+						for(var j=othis.map[i].length-1;j>=0;j--){
+							if(othis.map[i][j]==1||othis.map[i][j]==2){
+								temp=othis.map[i][j];
+								othis.map[i][j]=othis.map[i+1][j];
+								othis.map[i+1][j]=temp;
+							}		
+						};
+			},
+			freshScore:function(){//刷新当前分数
+				this.$nowscore.html(++this.scoreNumber);
+			},
+			getScore:function(){//得到分数，即对全为3的那一个数组操作
+				var num=0;
+				var othis=this;
+				
+				for(var i=0;i<othis.map.length;i++){
+					var score=true;
+					
+					for(var j=0;j<othis.map[i].length;j++){
+						if(othis.map[num][j]!=3)
+							score=false;
+					}
+					if(score){
+						for(var m=0;m<othis.map[num].length;m++){
+							othis.map[num][m]=0;
+						}
+						othis.freshScore();
+						othis.maxscore_init();
+						othis.deleteLine(i);//平移
+					}
+					num++;
+				}		
+			},
+			deleteLine:function(i){//让数组全为3的那一排之上的数组向下平移
+				var othis=this;
+				var onoff=true;
+				var arrtemp=[];
+				if(onoff){
+					for(var j=0;j<othis.map[0].length;j++)
+						arrtemp.push(0);
+					onoff=false;
+				}
+
+				for(var n=i;n>0;n--){					
+					if(n-1>0)
+						othis.map[n]=othis.map[n-1];
+					else
+						othis.map[n]=arrtemp;
+				}
+			},
+			maxscore_firstInit:function(){//初始化默认最大分数，默认为0
+				if(this.getCookie("maxscoreRussian")!="")
+					this.$maxscore.html(this.getCookie("maxscoreRussian"));
+			},
+			maxscore_init:function(){//当当前分数大于最大分数，设置cookie，初始化最大分数
+				if(parseInt(this.$nowscore.html())>parseInt(this.$maxscore.html())){
+					this.setCookie("maxscoreRussian",this.$nowscore.html(),3);
+				}
+			},
+			setCookie:function(cname,cvalue,exdays){//设置cookie
+				var d = new Date();
+				d.setTime(d.getTime()+(exdays*24*60*60*1000));
+				var expires = "expires="+d.toGMTString();
+				document.cookie = cname + "=" + cvalue + "; " + expires;
+			},
+			getCookie:function(cname){//获取cookie
+				var name = cname + "=";
+				var ca = document.cookie.split(';');
+				for(var i=0; i<ca.length; i++) 
+				{
+					var c = ca[i].trim();
+					if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+				}
+				return "";
+			},
+			init:function(){//初始化
+				this.block_init();
+				this.basic_init();
+				this.maxscore_firstInit();
+			},
+			addEvent:function(){//绑定事件
+				var othis=this;
+				
+				this.$startBtn.on('click',function(){
+					othis.autoGo();
+					$(document).on('keydown',function(ev){
+						if(ev.which==81||ev.which==69){
+							othis.changeDir(ev);
+						}
+						if(ev.which==37||ev.which==39||ev.which==40){
+							othis.changePos(ev);
+						}
+						
+					});
+				})
+				$(document).on('keydown',function(ev){//回车控制开始
+					if(ev.which==13)
+						othis.$startBtn.trigger('click');
+				})
+				this.$restartBtn.on('click',function(){
+					window.location.reload();
+				})
+			}
+		}
+		gameStart.init();
+		gameStart.addEvent();
+	});
+</script>
+</html>
